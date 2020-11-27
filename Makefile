@@ -7,6 +7,7 @@ compile:
 	do \
 		arm-oe-linux-gnueabi-g++ \
 			-DRING_SIZE=$$rs \
+			-DFILTER_TYPE=1 \
 			-march=armv7-a \
 			-mfpu=neon \
 			-mfloat-abi=hard \
@@ -20,6 +21,54 @@ compile:
 			recept.cpp \
 			-o precompiled/librecept_rs$$rs.so; \
 	done
+	arm-oe-linux-gnueabi-g++ \
+			-DFILTER_TYPE=0 \
+			-DIIR_FILT_COEFF=0.75 \
+			-DIIR_FILT_COEFF_Q_FACTOR=16 \
+			-march=armv7-a \
+			-mfpu=neon \
+			-mfloat-abi=hard \
+			-mcpu=cortex-a9 \
+			--sysroot=/usr/local/oecore-x86_64/sysroots/cortexa9hf-neon-oe-linux-gnueabi \
+			-Wall \
+			-shared \
+			-ldl \
+			-fPIC \
+			-O3 \
+			recept.cpp \
+			-o precompiled/librecept_iir_75_16.so; \
+	arm-oe-linux-gnueabi-g++ \
+			-DFILTER_TYPE=0 \
+			-DIIR_FILT_COEFF=0.5 \
+			-DIIR_FILT_COEFF_Q_FACTOR=16 \
+			-march=armv7-a \
+			-mfpu=neon \
+			-mfloat-abi=hard \
+			-mcpu=cortex-a9 \
+			--sysroot=/usr/local/oecore-x86_64/sysroots/cortexa9hf-neon-oe-linux-gnueabi \
+			-Wall \
+			-shared \
+			-ldl \
+			-fPIC \
+			-O3 \
+			recept.cpp \
+			-o precompiled/librecept_iir_50_16.so; \
+	arm-oe-linux-gnueabi-g++ \
+			-DFILTER_TYPE=0 \
+			-DIIR_FILT_COEFF=0.25 \
+			-DIIR_FILT_COEFF_Q_FACTOR=16 \
+			-march=armv7-a \
+			-mfpu=neon \
+			-mfloat-abi=hard \
+			-mcpu=cortex-a9 \
+			--sysroot=/usr/local/oecore-x86_64/sysroots/cortexa9hf-neon-oe-linux-gnueabi \
+			-Wall \
+			-shared \
+			-ldl \
+			-fPIC \
+			-O3 \
+			recept.cpp \
+			-o precompiled/librecept_iir_25_16.so; \
 
 test:
 	scp precompiled/librecept_rs16.so root@remarkable:librecept.so

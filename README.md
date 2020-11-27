@@ -15,6 +15,8 @@ reMarkable. I release this library in the hope that it is helpful to others. I
 can make no guarantee that it works as intended. There might be bugs leading to
 device crashes.
 
+This repository is forked from the original created by github user funkey.
+
 Installation
 ------------
 
@@ -47,6 +49,13 @@ filter size `N` is 8, the mean will trail the actual pen position by around 4
 milliseconds. This calculation assumes isochronous events, which might not be
 the case.
 
+To avoid the above latency issue, a second type of filter has been added.
+The IIR Filter is basically a running average which can be weighted more
+towards new values to try to get the newest reading closer to the edge.
+This might have a different filtering behaviour compared to the FIR filter
+implemented using the ring mechanism, however the filter coefficient can
+be tuned to get a similar time constant.
+
 How does it work?
 -----------------
 
@@ -55,3 +64,37 @@ How does it work?
 running on the tablet), `librecept` remembers the file handle. Subsequent
 `read`s from this handle are transparently filtered with a moving average of
 size 16 by default.
+
+How to comple it yourself
+-------------------------
+
+`ReCept` requires the arm toolchain from remarkable to be downloaded and installed.
+Instructions to do so can be found at: `https://remarkable.engineering/deploy/sdk/`
+
+    curl https://remarkable.engineering/oecore-x86_64-cortexa9hf-neon-toolchain-zero-gravitas-1.8-23.9.2019.sh -o install-toolchain.sh
+
+The toolchain uses a shell script that will install the necessary binaries to the
+directory you specify. It requires that you have bsdtar installed on your machine.
+If you don't you can install it using apt for Ubuntu:
+
+    sudo apt install libarchive-tools
+
+To install the toolchain, simply run
+
+    chmod +x install-toolchain.sh
+    ./install-toolchain.sh
+
+Once you have the toolchain downloaded and installed, you can source the toolchain
+into your path. Look for the below file in the path that you provided for installing
+the toolchain.
+
+    environment-setup-cortexa9hf-neon-poky-linux-gnueabi
+    source <PATH_TO_TOOLCHAIN>/environment-setup-cortexa9hf-neon-poky-linux-gnueabi
+
+Now you are ready to compile. Just issuing make on the command line will generate all
+the binaries corresponding to the different filters.
+
+    make
+
+After this follow the install instructions above to push the library to your tablet
+and to restart xochitl.
